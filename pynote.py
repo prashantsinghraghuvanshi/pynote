@@ -1,4 +1,5 @@
 import tkinter as tk
+from textblob import TextBlob
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 def open_file(window, text_edit):
@@ -24,6 +25,20 @@ def save_file(window, text_edit):
         f.write(content)
     window.title(f"Saved File: {filepath}")
 
+#text correction
+def correct_grammar(text):
+    blob=TextBlob(text)
+    corrected_text = str(blob.correct())
+    return corrected_text
+
+def create_correct_button_command(text_edit):
+    def correct_text():
+        text = text_edit.get(1.0, tk.END)
+        corrected_text = correct_grammar(text)
+        text_edit.delete(1.0, tk.END)
+        text_edit.insert(1.0, corrected_text)
+    return correct_text
+
 def main():
     window=tk.Tk()
     window.title("pynote")
@@ -37,9 +52,11 @@ def main():
     frame=tk.Frame(window,relief=tk.RAISED,bd=2)
     save_button=tk.Button(frame,text="Save", command=lambda: save_file(window, text_edit))
     open_button=tk.Button(frame,text="Open", command=lambda: open_file(window, text_edit))
+    correct_button = tk.Button(frame, text="Correct", command=create_correct_button_command(text_edit))
     
     save_button.grid(row=0,column=0,padx=5, pady=5, sticky="ew")
     open_button.grid(row=1,column=0,padx=5,sticky="ew")
+    correct_button.grid(row=2, column=0, padx=5, pady=5, sticky="ew")
     
     frame.grid(row=0,column=0,sticky="ns")
     
